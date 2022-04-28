@@ -3,6 +3,7 @@ const bcr = require("bcrypt");
 const jwt = require("jsonwebtoken");
 import User from "../models/User";
 import { signup, login, updateProfile, searchUserByName, getUserDetailsById,} from "../controllers/User";
+import { followAccount, unFollowAccount } from "../controllers/Follow";
 const router : Router = express.Router()
 
 router.get('/', (req : any, res : Response)=>{
@@ -19,4 +20,7 @@ router.get('/d/:id', getUserDetailsById)//get a single user's details by id
 
 router.patch('/update', updateProfile)//profile update route
 
+router.post('/follow', followAccount)
+
+router.post('/unfollow', unFollowAccount)
 export default router

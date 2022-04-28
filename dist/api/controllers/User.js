@@ -128,11 +128,11 @@ const searchUserByName = (req, res) => {
 };
 exports.searchUserByName = searchUserByName;
 const getUserDetailsById = (req, res) => {
-    User_1.default.findOne({ _id: req.params.id }).exec().then((doc) => {
+    User_1.default.findById(req.params.id).exec().then((doc) => {
         if (!doc) {
             return res.status(409).json({ message: 'User Doesn\'t Exist!' });
         }
-        return res.status(200).json({ deets: doc });
+        return res.status(200).json(doc);
     }).catch((err) => {
         res.status(500).json({ message: err.message });
     });

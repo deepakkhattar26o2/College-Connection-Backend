@@ -29,8 +29,8 @@ const sendMail = (req : Request, res : Response) => {
           .then((conc:any) => {
             var mailOptions = {
               from: "collegeconnection2cu@gmail.com",
-              to: "deepakkhattar1s@gmail.com",
-              subject: "Sending Email using Node.js[nodemailer]",
+              to: req.body.email,
+              subject: "College Connection Password Reset",
               text: `Enter This OTP in The RESET Password Form : ${rstr}`,
             };
             transporter.sendMail(mailOptions, function (error: Error, info : any) {
@@ -57,7 +57,8 @@ const verifyOtp = (req : Request, res : Response) => {
         if (!doc) {
           return res.status(409).json({ message: "Bad Request!" });
         }
-        if (req.body.rstr !== doc.temp) {
+        // console.log(req.body, doc.temp)
+        if (req.body.rstr != doc.temp) {
           return res.status(409).json({ message: "Wrong OTP!" });
         }
         User.updateOne({ email: req.body.email }, { $set: { temp: "tbd" } })

@@ -3,12 +3,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteBlog = exports.updateBlog = exports.searchBlogByTitle = exports.getAllBlogsByAuthor = exports.getBlogById = exports.createBlog = void 0;
+exports.deleteComment = exports.createComment = exports.deleteBlog = exports.updateBlog = exports.searchBlogByTitle = exports.getAllBlogsByAuthor = exports.getBlogById = exports.createBlog = void 0;
 const Blog_1 = __importDefault(require("../models/Blog"));
 const User_1 = __importDefault(require("../models/User"));
+const Comment_1 = __importDefault(require("../models/Comment"));
 const createBlog = (req, res) => {
     const body = req.body;
-    User_1.default.findOne({ _id: body.author_id }).exec().then(doc => {
+    User_1.default.findById(body.author_id).exec().then(doc => {
         if (!doc) {
             return res.status(409).json({ message: "Invalid Request!" });
         }
@@ -26,11 +27,15 @@ const createBlog = (req, res) => {
 };
 exports.createBlog = createBlog;
 const getBlogById = (req, res) => {
-    Blog_1.default.findOne({ _id: req.params.id }).exec().then((doc) => {
+    Blog_1.default.findById(req.params.id).exec().then((doc) => {
         if (!doc) {
             return res.status(404).json({ message: 'Blog Not Found!' });
         }
-        return res.status(200).json({ blog: doc });
+        Comment_1.default.find({ blog_id: req.params.id }).exec().then((docs) => {
+            return res.status(200).json({ blog: doc, comments: docs || null });
+        }).catch((err) => {
+            res.status(500).json({ message: err.message });
+        });
     }).catch((err) => {
         res.status(500).json({ message: err.message });
     });
@@ -73,7 +78,7 @@ const updateBlog = (req, res) => {
 };
 exports.updateBlog = updateBlog;
 const deleteBlog = (req, res) => {
-    Blog_1.default.findOneAndDelete({ _id: req.params.id }).exec().then((doc) => {
+    Blog_1.default.findByIdAndDelete(req.params.id).exec().then((doc) => {
         if (!doc) {
             return res.status(409).json({ message: 'Invalid Request' });
         }
@@ -81,3 +86,36 @@ const deleteBlog = (req, res) => {
     }).catch((err) => res.status(500).json({ message: err.message }));
 };
 exports.deleteBlog = deleteBlog;
+const createComment = (req, res) => {
+    const body = req.body;
+    Blog_1.default.findById(body.blog_id).exec().then((doc) => {
+        if (!doc) {
+            return res.status(409).json({ message: "Blog doesn't exist anymore!" });
+        }
+        let comment = new Comment_1.default({
+            blog_id: body.blog_id,
+            user_id: body.user_id,
+            content: body.content,
+        });
+        comment.save().then((conc) => {
+            return res.status(200).json({ message: "Commented Successfully!" });
+        }).catch((err) => {
+            return res.status(500).json({ message: err.message });
+        });
+    }).catch((err) => { res.status(500).json({ message: err.message }); });
+};
+exports.createComment = createComment;
+const deleteComment = (req, res) => {
+    const body = req.body;
+    Comment_1.default.findById(body.comment_id).exec().then(doc => {
+        if (!doc || doc.user_id != body.user_id) {
+            return res.status(409).json({ message: "Cannot Delete Comment" });
+        }
+        Comment_1.default.findByIdAndDelete(body.comment_id).exec().then((conc) => {
+            res.status(200).json({ message: "Comment Deleted Successfully!" });
+        }).catch((err) => {
+            return res.status(409).json({ message: err.message });
+        });
+    }).catch((err) => { res.status(500).json({ message: err.message }); });
+};
+exports.deleteComment = deleteComment;

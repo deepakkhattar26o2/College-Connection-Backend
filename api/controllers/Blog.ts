@@ -1,15 +1,16 @@
 import {Request, Response} from 'express'
 import Blog from "../models/Blog";
 import User from "../models/User";
+import Comment from "../models/Comment";
 
 interface blogRequestBody {
-    author_id : number,
+    author_id : string,
     title : string,
     content : string
 }
 const createBlog =  (req : Request, res : Response)=>{
     const body : blogRequestBody = req.body
-    User.findOne({_id : body.author_id}).exec().then(
+    User.findById(body.author_id).exec().then(
         doc=>{
             if(!doc){
                 return res.status(409).json({message : "Invalid Request!"})
@@ -35,12 +36,20 @@ const createBlog =  (req : Request, res : Response)=>{
 }
 
 const getBlogById = (req : Request, res : Response)=>{
-    Blog.findOne({_id : req.params.id}).exec().then(
+    Blog.findById(req.params.id).exec().then(
         (doc : any)=>{
             if(!doc){
                 return res.status(404).json({message: 'Blog Not Found!'})
             }
-            return res.status(200).json({blog : doc})
+            Comment.find({blog_id : req.params.id}).exec().then(
+                (docs : any)=>{
+                    return res.status(200).json({blog : doc, comments : docs||null})
+                }
+            ).catch(
+                (err : Error)=>{
+                    res.status(500).json({message : err.message})
+                }
+            )
         }
     ).catch(
         (err : Error)=>{
@@ -98,7 +107,7 @@ const updateBlog = (req : Request, res : Response)=>{
 }
 
 const deleteBlog =  (req : Request, res : Response)=>{
-    Blog.findOneAndDelete({_id: req.params.id}).exec().then(
+    Blog.findByIdAndDelete(req.params.id).exec().then(
         (doc : any)=>{
             if(!doc){
                 return res.status(409).json({message : 'Invalid Request'})
@@ -110,4 +119,62 @@ const deleteBlog =  (req : Request, res : Response)=>{
     )
 }
 
-export {createBlog, getBlogById, getAllBlogsByAuthor, searchBlogByTitle, updateBlog, deleteBlog}
+interface commentBody{
+    blog_id : string,
+    user_id : string,
+    content : string
+}
+const createComment = (req : Request, res : Response)=>{
+    const body : commentBody = req.body;
+    Blog.findById(body.blog_id).exec().then(
+        (doc : any)=>{
+            if(!doc){
+                return res.status(409).json({message : "Blog doesn't exist anymore!"})
+            }
+            let comment = new Comment({
+                blog_id : body.blog_id,
+                user_id : body.user_id,
+                content : body.content,
+            })
+            comment.save().then(
+                (conc : any)=>{
+                    return res.status(200).json({message : "Commented Successfully!"})
+                }
+            ).catch(
+                (err : Error)=>{
+                    return res.status(500).json({message : err.message})
+                }
+            )
+        }
+    ).catch(
+        (err : Error)=>{res.status(500).json({message : err.message})}
+    )
+}
+interface deleteCommentBody{
+    comment_id : string,
+    user_id : string//the one who wants to delete comment, allowed only for the one who commented,as of now
+}
+const deleteComment = (req : Request, res : Response)=>{
+    const body : deleteCommentBody = req.body;
+    Comment.findById(body.comment_id).exec().then(
+        doc=>{
+            if(!doc || doc.user_id!=body.user_id){
+                return res.status(409).json({message : "Cannot Delete Comment"})
+            }
+            Comment.findByIdAndDelete(body.comment_id).exec().then(
+                (conc : any)=>{
+                    res.status(200).json({message : "Comment Deleted Successfully!"})
+                }
+            ).catch(
+                (err : Error)=>{
+                    return res.status(409).json({message : err.message})
+                }
+            )
+        }
+    ).catch(
+        (err : Error)=>{res.status(500).json({message : err.message})}
+    )
+}
+
+
+export {createBlog, getBlogById, getAllBlogsByAuthor, searchBlogByTitle, updateBlog, deleteBlog, createComment, deleteComment}

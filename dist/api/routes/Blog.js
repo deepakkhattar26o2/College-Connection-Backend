@@ -12,4 +12,7 @@ router.get('/search/:title', Blog_1.searchBlogByTitle); //title for blog
 router.get('/u/:id', Blog_1.getBlogById); //blog id
 router.patch('/u/:id', Blog_1.updateBlog);
 router.delete('/u/:id', Blog_1.deleteBlog);
+//comments
+router.post('/c', Blog_1.createComment);
+router.delete('/c', Blog_1.deleteComment);
 exports.default = router;

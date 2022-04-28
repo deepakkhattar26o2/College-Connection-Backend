@@ -151,12 +151,12 @@ const searchUserByName = (req: Request, res: Response) => {
   };
   
 const getUserDetailsById = (req: Request, res: Response)=>{
-    User.findOne({_id : req.params.id}).exec().then(
+    User.findById(req.params.id).exec().then(
         (doc : any)=>{
             if(!doc){
                 return res.status(409).json({message : 'User Doesn\'t Exist!'})
             }
-            return res.status(200).json({deets : doc})
+            return res.status(200).json(doc)
         }
     ).catch(
         (err: Error)=>{
@@ -164,5 +164,7 @@ const getUserDetailsById = (req: Request, res: Response)=>{
         }
     )
 }
+
+//TODO delete profile and all the blogs created from it
 
 export { signup, login, updateProfile, searchUserByName, getUserDetailsById};

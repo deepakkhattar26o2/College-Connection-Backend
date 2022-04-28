@@ -5,8 +5,8 @@ const blogSchema = new mongoose.Schema({
     title: {type: String, require: true},
     created_at: {type:Date, default: new Date()},
     content: {type: String, require: true},
-    likes: {type: Number, default: 0},
-    dislikes: {type: Number,  default: 0}
+    // likes: {type: Number, default: 0},
+    // dislikes: {type: Number,  default: 0}
 })
 
 export default mongoose.model('Blog', blogSchema)
