@@ -176,5 +176,52 @@ const deleteComment = (req : Request, res : Response)=>{
     )
 }
 
+const likeBlog = (req : Request, res : Response)=>{
+    const body : any = req.body
+    Blog.findById(body.blog_id).exec().then(
+        (doc : any)=>{
+            if(!doc){
+                res.status(409).json({message : "Not Found!"})
+            }
+            Blog.updateOne({_id : body.blog_id}, {$set : {likes : doc.likes+1}}).exec().then(
+                conc=>{
+                    res.status(200).json({message : "Like Successful"})
+                }
+            ).catch(
+                (err : Error)=>{
+                    return res.status(500).json({message : err.message})
+                }
+            )
+        }
+    ).catch(
+        (err : Error)=>{
+            res.status(500).json({message : err.message})
+        }
+    )
+}
 
-export {createBlog, getBlogById, getAllBlogsByAuthor, searchBlogByTitle, updateBlog, deleteBlog, createComment, deleteComment}
+const unlikeBlog = (req : Request, res : Response)=>{
+    const body : any = req.body
+    Blog.findById(body.blog_id).exec().then(
+        (doc : any)=>{
+            if(!doc){
+                res.status(409).json({message : "Not Found!"})
+            }
+            Blog.updateOne({_id : body.blog_id}, {$set : {likes : doc.likes-1}}).exec().then(
+                conc=>{
+                    res.status(200).json({message : "Like Successful"})
+                }
+            ).catch(
+                (err : Error)=>{
+                    return res.status(500).json({message : err.message})
+                }
+            )
+        }
+    ).catch(
+        (err : Error)=>{
+            res.status(500).json({message : err.message})
+        }
+    )
+}
+
+export {createBlog, getBlogById, getAllBlogsByAuthor, searchBlogByTitle, updateBlog, deleteBlog, createComment, deleteComment, likeBlog, unlikeBlog}
