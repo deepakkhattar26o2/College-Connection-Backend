@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getUserDetailsById = exports.searchUserByName = exports.updateProfile = exports.login = exports.signup = void 0;
+const Blog_1 = __importDefault(require("../models/Blog"));
 const bcr = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const User_1 = __importDefault(require("../models/User"));
@@ -132,7 +133,11 @@ const getUserDetailsById = (req, res) => {
         if (!doc) {
             return res.status(409).json({ message: 'User Doesn\'t Exist!' });
         }
-        return res.status(200).json(doc);
+        Blog_1.default.find({ author_id: doc._id }).exec().then((docs) => {
+            return res.status(200).json({ deets: doc, numeros: docs.length });
+        }).catch((err) => {
+            res.status(500).json({ message: err.message });
+        });
     }).catch((err) => {
         res.status(500).json({ message: err.message });
     });

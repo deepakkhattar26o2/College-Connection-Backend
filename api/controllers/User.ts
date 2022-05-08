@@ -1,4 +1,5 @@
 import { Response, Request } from "express";
+import Blog from "../models/Blog";
 const bcr = require("bcrypt");
 const jwt = require("jsonwebtoken");
 import User from "../models/User";
@@ -156,7 +157,15 @@ const getUserDetailsById = (req: Request, res: Response)=>{
             if(!doc){
                 return res.status(409).json({message : 'User Doesn\'t Exist!'})
             }
-            return res.status(200).json(doc)
+            Blog.find({author_id : doc._id}).exec().then(
+              (docs : any)=>{
+                return res.status(200).json({deets : doc, numeros : docs.length})
+              }
+            ).catch(
+              (err: Error)=>{
+                res.status(500).json({message : err.message})
+            }
+            )
         }
     ).catch(
         (err: Error)=>{

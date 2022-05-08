@@ -12,6 +12,8 @@ router.get('/search/:title', Blog_1.searchBlogByTitle); //title for blog
 router.get('/u/:id', Blog_1.getBlogById); //blog id
 router.patch('/u/:id', Blog_1.updateBlog);
 router.delete('/u/:id', Blog_1.deleteBlog);
+router.patch('/l', Blog_1.likeBlog);
+router.patch('/ul', Blog_1.unlikeBlog);
 //comments
 router.post('/c', Blog_1.createComment);
 router.delete('/c', Blog_1.deleteComment);

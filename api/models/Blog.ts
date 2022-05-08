@@ -6,6 +6,7 @@ const blogSchema = new mongoose.Schema({
     created_at: {type:Date, default: new Date()},
     content: {type: String, require: true},
     likes: {type: Number, default: 0},
+    sub_title : {type: String, default : ""}
     // dislikes: {type: Number,  default: 0}
 })
 

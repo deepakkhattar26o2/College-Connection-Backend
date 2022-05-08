@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteComment = exports.createComment = exports.deleteBlog = exports.updateBlog = exports.searchBlogByTitle = exports.getAllBlogsByAuthor = exports.getBlogById = exports.createBlog = void 0;
+exports.unlikeBlog = exports.likeBlog = exports.deleteComment = exports.createComment = exports.deleteBlog = exports.updateBlog = exports.searchBlogByTitle = exports.getAllBlogsByAuthor = exports.getBlogById = exports.createBlog = void 0;
 const Blog_1 = __importDefault(require("../models/Blog"));
 const User_1 = __importDefault(require("../models/User"));
 const Comment_1 = __importDefault(require("../models/Comment"));
@@ -17,6 +17,7 @@ const createBlog = (req, res) => {
             author_id: body.author_id,
             title: body.title,
             content: body.content,
+            sub_title: body.sub_title
         });
         newBlog.save().then((conc) => {
             return res.status(200).json({ message: 'Blog Created Successfully' });
@@ -32,7 +33,20 @@ const getBlogById = (req, res) => {
             return res.status(404).json({ message: 'Blog Not Found!' });
         }
         Comment_1.default.find({ blog_id: req.params.id }).exec().then((docs) => {
-            return res.status(200).json({ blog: doc, comments: docs || null });
+            const mdocs = docs;
+            let marr = [];
+            for (let i = 0; i < mdocs.length; i++) {
+                User_1.default.findById(mdocs[i].user_id).select("userName").exec().then((usero) => {
+                    marr.push(usero.userName);
+                }).catch((err) => {
+                    return res.status(500).json({ message: err.message });
+                });
+            }
+            User_1.default.findById(doc.author_id).select("_id userName").exec().then((author) => {
+                return res.status(200).json({ blog: doc, author_details: author, comments: mdocs || null, commentors: marr });
+            }).catch((err) => {
+                return res.status(500).json({ message: err.message });
+            });
         }).catch((err) => {
             res.status(500).json({ message: err.message });
         });
@@ -119,3 +133,35 @@ const deleteComment = (req, res) => {
     }).catch((err) => { res.status(500).json({ message: err.message }); });
 };
 exports.deleteComment = deleteComment;
+const likeBlog = (req, res) => {
+    const body = req.body;
+    Blog_1.default.findById(body.blog_id).exec().then((doc) => {
+        if (!doc) {
+            res.status(409).json({ message: "Not Found!" });
+        }
+        Blog_1.default.updateOne({ _id: body.blog_id }, { $set: { likes: doc.likes + 1 } }).exec().then(conc => {
+            res.status(200).json({ message: "Like Successful" });
+        }).catch((err) => {
+            return res.status(500).json({ message: err.message });
+        });
+    }).catch((err) => {
+        res.status(500).json({ message: err.message });
+    });
+};
+exports.likeBlog = likeBlog;
+const unlikeBlog = (req, res) => {
+    const body = req.body;
+    Blog_1.default.findById(body.blog_id).exec().then((doc) => {
+        if (!doc) {
+            res.status(409).json({ message: "Not Found!" });
+        }
+        Blog_1.default.updateOne({ _id: body.blog_id }, { $set: { likes: doc.likes - 1 } }).exec().then(conc => {
+            res.status(200).json({ message: "Like Successful" });
+        }).catch((err) => {
+            return res.status(500).json({ message: err.message });
+        });
+    }).catch((err) => {
+        res.status(500).json({ message: err.message });
+    });
+};
+exports.unlikeBlog = unlikeBlog;
