@@ -61,7 +61,7 @@ const getBlogById = (req : Request, res : Response)=>{
                     }
                     User.findById(doc.author_id).select("_id userName").exec().then(
                         (author: any)=>{
-                            return res.status(200).json({blog : doc,author_details: author, comments : mdocs||null, commentors: marr})
+                            return res.status(200).json({blog : doc,author_details: author, comments : mdocs||null, commentors: marr || null})
                         }
                     ).catch(
                         (err : Error)=>{
