@@ -17,7 +17,7 @@ const createBlog = (req, res) => {
             author_id: body.author_id,
             title: body.title,
             content: body.content,
-            sub_title: body.sub_title
+            // sub_title : body.sub_title
         });
         newBlog.save().then((conc) => {
             return res.status(200).json({ message: 'Blog Created Successfully' });
@@ -43,7 +43,7 @@ const getBlogById = (req, res) => {
                 });
             }
             User_1.default.findById(doc.author_id).select("_id userName").exec().then((author) => {
-                return res.status(200).json({ blog: doc, author_details: author, comments: mdocs || null, commentors: marr });
+                return res.status(200).json({ blog: doc, author_details: author, comments: mdocs || null, commentors: marr || null });
             }).catch((err) => {
                 return res.status(500).json({ message: err.message });
             });

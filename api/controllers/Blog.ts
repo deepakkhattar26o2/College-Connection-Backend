@@ -7,7 +7,7 @@ interface blogRequestBody {
     author_id : string,
     title : string,
     content : string,
-    sub_title : string
+    // sub_title : string
 }
 const createBlog =  (req : Request, res : Response)=>{
     const body : blogRequestBody = req.body
@@ -20,11 +20,11 @@ const createBlog =  (req : Request, res : Response)=>{
                 author_id : body.author_id, 
                 title : body.title,
                 content : body.content,
-                sub_title : body.sub_title
+                // sub_title : body.sub_title
             })
             newBlog.save().then(
                 (conc : any)=>{
-                    return res.status(200).json({message : 'Blog Created Successfully'})
+                    return res.status(200).json({message : conc})
                 }
             ).catch(
                 (err : Error)=>{

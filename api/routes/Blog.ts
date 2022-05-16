@@ -1,5 +1,6 @@
 import express from 'express'
 import { createBlog, createComment, deleteBlog, deleteComment, getAllBlogsByAuthor, getBlogById, likeBlog, searchBlogByTitle, unlikeBlog, updateBlog } from '../controllers/Blog'
+import upload from '../../upload'
 const router = express.Router()
 
 router.post('/new', createBlog)

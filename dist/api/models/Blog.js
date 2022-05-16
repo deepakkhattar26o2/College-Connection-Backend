@@ -10,7 +10,7 @@ const blogSchema = new mongoose_1.default.Schema({
     created_at: { type: Date, default: new Date() },
     content: { type: String, require: true },
     likes: { type: Number, default: 0 },
-    sub_title: { type: String, default: "" }
+    // sub_title : {type: String, default : ""}
     // dislikes: {type: Number,  default: 0}
 });
 exports.default = mongoose_1.default.model('Blog', blogSchema);
