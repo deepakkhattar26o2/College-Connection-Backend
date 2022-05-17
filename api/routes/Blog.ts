@@ -1,11 +1,13 @@
 import express from 'express'
-import { createBlog, createComment, deleteBlog, deleteComment, getAllBlogsByAuthor, getBlogById, likeBlog, searchBlogByTitle, unlikeBlog, updateBlog } from '../controllers/Blog'
+import { createBlog, createComment, deleteBlog, deleteComment, getAllBlogsByAuthor, getBlogById, likeBlog, searchBlogByTitle, unlikeBlog, updateBlog, getAllBlogs } from '../controllers/Blog'
 import upload from '../../upload'
 const router = express.Router()
 
 router.post('/new', createBlog)
 
 router.get('/user/:id', getAllBlogsByAuthor)//author id
+
+router.get('/all', getAllBlogs);
 
 router.get('/search/:title', searchBlogByTitle)//title for blog
 

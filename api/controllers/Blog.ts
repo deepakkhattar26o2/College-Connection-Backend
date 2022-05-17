@@ -24,7 +24,7 @@ const createBlog =  (req : Request, res : Response)=>{
             })
             newBlog.save().then(
                 (conc : any)=>{
-                    return res.status(200).json({message : conc})
+                    return res.status(200).json(conc)
                 }
             ).catch(
                 (err : Error)=>{
@@ -45,23 +45,25 @@ const getBlogById = (req : Request, res : Response)=>{
             }
             Comment.find({blog_id : req.params.id}).exec().then(
                 (docs : any)=>{
-                    const mdocs = docs
-                    let marr : string[] = []
-                    for(let i=0; i<mdocs.length; i++) {
-                        User.findById(mdocs[i].user_id).select("userName").exec().then(
-                            (usero: any)=>
-                            {
-                               marr.push(usero.userName)
-                            }
-                        ).catch(
-                            (err : Error)=>{
-                                return res.status(500).json({message : err.message})
-                            }
-                        )
-                    }
+                    // const mdocs = docs
+                    // let marr : string[] = []
+                    // for(let i=0; i<mdocs.length; i++) {
+                    //     User.findById(mdocs[i].user_id).select("userName").exec().then(
+                    //         (usero: any)=>
+                    //         {
+                    //            marr.push(usero.userName)
+                    //         }
+                    //     ).catch(
+                    //         (err : Error)=>{
+                    //             return res.status(500).json({message : err.message})
+                    //         }
+                    //     )
+                    // }
                     User.findById(doc.author_id).select("_id userName").exec().then(
                         (author: any)=>{
-                            return res.status(200).json({blog : doc,author_details: author, comments : mdocs||null, commentors: marr || null})
+                            return res.status(200).json({blog : doc,author_details: author, 
+                                // comments : mdocs||null, commentors: marr || null
+                            })
                         }
                     ).catch(
                         (err : Error)=>{
@@ -248,4 +250,19 @@ const unlikeBlog = (req : Request, res : Response)=>{
     )
 }
 
-export {createBlog, getBlogById, getAllBlogsByAuthor, searchBlogByTitle, updateBlog, deleteBlog, createComment, deleteComment, likeBlog, unlikeBlog}
+const getAllBlogs = (req : Request, res : Response) => {
+    Blog.find().exec().then(
+        (docs : any)=>{
+            if(docs.length===0){
+                return res.status(409).json({message : 'No Blogs Found'})
+            }
+            res.status(200).json(docs)
+        }
+    ).catch(
+        (err : Error)=>{
+            res.status(500).json({message : err.message})
+        }
+    )
+}
+
+export {createBlog, getBlogById, getAllBlogsByAuthor, searchBlogByTitle, updateBlog, deleteBlog, createComment, deleteComment, likeBlog, unlikeBlog, getAllBlogs}
