@@ -159,7 +159,7 @@ const getUserDetailsById = (req: Request, res: Response)=>{
             }
             Blog.find({author_id : doc._id}).exec().then(
               (docs : any)=>{
-                return res.status(200).json({deets : doc, numeros : docs.length})
+                return res.status(200).json({deets : doc, numeros : docs.length, blogs : docs})
               }
             ).catch(
               (err: Error)=>{

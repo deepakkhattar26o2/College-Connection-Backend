@@ -45,24 +45,24 @@ const getBlogById = (req : Request, res : Response)=>{
             }
             Comment.find({blog_id : req.params.id}).exec().then(
                 (docs : any)=>{
-                    // const mdocs = docs
-                    // let marr : string[] = []
-                    // for(let i=0; i<mdocs.length; i++) {
-                    //     User.findById(mdocs[i].user_id).select("userName").exec().then(
-                    //         (usero: any)=>
-                    //         {
-                    //            marr.push(usero.userName)
-                    //         }
-                    //     ).catch(
-                    //         (err : Error)=>{
-                    //             return res.status(500).json({message : err.message})
-                    //         }
-                    //     )
-                    // }
+                    const mdocs = docs
+                    let marr : string[] = []
+                    for(let i=0; i<mdocs.length; i++) {
+                        User.findById(mdocs[i].user_id).select("userName").exec().then(
+                            (usero: any)=>
+                            {
+                               marr.push(usero.userName)
+                            }
+                        ).catch(
+                            (err : Error)=>{
+                                return res.status(500).json({message : err.message})
+                            }
+                        )
+                    }
                     User.findById(doc.author_id).select("_id userName").exec().then(
                         (author: any)=>{
                             return res.status(200).json({blog : doc,author_details: author, 
-                                // comments : mdocs||null, commentors: marr || null
+                                comments : mdocs||null, commentors: marr || null
                             })
                         }
                     ).catch(
