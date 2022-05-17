@@ -11,16 +11,10 @@ app.use(cors());
 import upload from "./upload";
 const socketio = require("socket.io");
 const server = http.createServer(app);
-const io = socketio(server);
-
 app.use(express.json());
 
 
 connect();
-
-io.on("connection", (socket: any) => {
-  console.log("New WS Connnection!");
-});
 
 app.use("/api", apiRouter);
 
