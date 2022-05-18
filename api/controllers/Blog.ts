@@ -90,7 +90,7 @@ const getAllBlogsByAuthor = (req : Request, res : Response)=>{
             if(docs.length===0){
                 return res.status(409).json({message : 'No Blogs Found'})
             }
-            res.status(200).json(docs)
+            res.status(200).json(docs.reverse())
         }
     ).catch(
         (err : Error)=>{
@@ -256,7 +256,7 @@ const getAllBlogs = (req : Request, res : Response) => {
             if(docs.length===0){
                 return res.status(409).json({message : 'No Blogs Found'})
             }
-            res.status(200).json(docs)
+            res.status(200).json(docs.reverse())
         }
     ).catch(
         (err : Error)=>{

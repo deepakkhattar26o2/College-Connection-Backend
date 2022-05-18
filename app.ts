@@ -47,6 +47,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.get("/pfp/:name", function (req, res) {
   const file_path = path.join(__dirname, "uploads", req.params.name);
+  const default_img = path.join(__dirname, "uploads", 'default.jpg');
   try {
     if (fs.existsSync(file_path + ".png")) {
       res.sendFile(file_path + ".png");
@@ -57,6 +58,7 @@ app.get("/pfp/:name", function (req, res) {
     if (fs.existsSync(file_path + ".jpeg")) {
       res.sendFile(file_path + ".jpeg");
     }
+    res.sendFile(default_img)
   } catch (err) {
     console.error(err);
   }
