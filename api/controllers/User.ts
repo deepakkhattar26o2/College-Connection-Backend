@@ -1,5 +1,6 @@
 import { Response, Request } from "express";
 import Blog from "../models/Blog";
+import Follow from "../models/Follow";
 const bcr = require("bcrypt");
 const jwt = require("jsonwebtoken");
 import User from "../models/User";
@@ -74,14 +75,14 @@ const signup = (req: Request, res: Response) => {
     });
 };
 
-interface LoginInterface{
-    email : string, 
-    password : string
+interface LoginInterface {
+  email: string;
+  password: string;
 }
-const login = (req : Request, res : Response) => {
-  const body : LoginInterface = req.body;
-  if(!(body.email && body.password)){
-      return res.status(409).json({message : "Bad Request!"})
+const login = (req: Request, res: Response) => {
+  const body: LoginInterface = req.body;
+  if (!(body.email && body.password)) {
+    return res.status(409).json({ message: "Bad Request!" });
   }
   User.findOne({ email: body.email })
     .exec()
@@ -89,7 +90,7 @@ const login = (req : Request, res : Response) => {
       if (!doc) {
         return res.status(409).json({ message: "Account Doesn't Exist!" });
       }
-      bcr.compare(body.password, doc.password, (err : Error, same : boolean) => {
+      bcr.compare(body.password, doc.password, (err: Error, same: boolean) => {
         if (err) {
           return res.status(500).json({ message: err.message });
         }
@@ -116,64 +117,78 @@ const login = (req : Request, res : Response) => {
     });
 };
 
-const updateProfile = (req : Request, res: Response)=>{
-    const body : any= req.body;
-    if(body.password){
-        return res.status(409).json({message: "Password Cannot be Changed"})
-    }
-    body.userName = body.first_name +" "+body.last_name
-    User.findByIdAndUpdate(req.params.id, {$set: body }).exec().then(
-      (conc : any)=>{
-        if(!conc){
-          return res.status(409).json({message : 'Invalid Request!'})
-        }
-        res.status(200).json(conc)
-      }
-    ).catch(
-      (err: Error)=>{
-        res.status(500).json({message : err.message})
-      }
-    )
+const updateProfile = (req: Request, res: Response) => {
+  const body: any = req.body;
+  if (body.password) {
+    return res.status(409).json({ message: "Password Cannot be Changed" });
   }
+  body.userName = body.first_name + " " + body.last_name;
+  User.findByIdAndUpdate(req.params.id, { $set: body })
+    .exec()
+    .then((conc: any) => {
+      if (!conc) {
+        return res.status(409).json({ message: "Invalid Request!" });
+      }
+      res.status(200).json(conc);
+    })
+    .catch((err: Error) => {
+      res.status(500).json({ message: err.message });
+    });
+};
 
 const searchUserByName = (req: Request, res: Response) => {
-    User.find({ userName:  new RegExp(req.params.username.toLowerCase(), "")}).select('_id userName')
-      .exec()
-      .then((docs : any) => {
-        if (docs.length===0) {
-          return res.status(409).json([]);
-        }
-        return res.status(200).json({ deets: docs });
-      })
-      .catch((err : Error) => {
-        console.log(err.message);
-        res.status(500).json({ message: err.message });
-      });
-  };
-  
-const getUserDetailsById = (req: Request, res: Response)=>{
-    User.findById(req.params.id).exec().then(
-        (doc : any)=>{
-            if(!doc){
-                return res.status(409).json({message : 'User Doesn\'t Exist!'})
-            }
-            Blog.find({author_id : doc._id}).exec().then(
-              (docs : any)=>{
-                return res.status(200).json({deets : doc, numeros : docs.length, blogs : docs})
-              }
-            ).catch(
-              (err: Error)=>{
-                res.status(500).json({message : err.message})
-            }
-            )
-        }
-    ).catch(
-        (err: Error)=>{
-            res.status(500).json({message : err.message})
-        }
-    )
-}
+  User.find({ userName: new RegExp(req.params.username.toLowerCase(), "") })
+    .select("_id userName")
+    .exec()
+    .then((docs: any) => {
+      if (docs.length === 0) {
+        return res.status(409).json([]);
+      }
+      return res.status(200).json({ deets: docs });
+    })
+    .catch((err: Error) => {
+      console.log(err.message);
+      res.status(500).json({ message: err.message });
+    });
+};
+
+const getUserDetailsById = (req: Request, res: Response) => {
+  User.findById(req.params.id)
+    .exec()
+    .then((doc: any) => {
+      if (!doc) {
+        return res.status(409).json({ message: "User Doesn't Exist!" });
+      }
+      Blog.find({ author_id: doc._id })
+        .exec()
+        .then((docs: any) => {
+          Follow.find({ user_id: req.params.id })
+            .exec()
+            .then((followers: any) => {
+              Follow.find({ follower_id: req.params.id })
+                .exec()
+                .then((following: any) => {
+                  return res
+                    .status(200)
+                    .json({ deets: doc, numeros: docs.length, blogs: docs, followers : followers.length||0, following: following.length||0 });
+                })
+                .catch((err: Error) => {
+                  res.status(500).json({ message: err.message });
+                });
+            })
+            .catch((err: Error) => {
+              res.status(500).json({ message: err.message });
+            });
+        })
+        .catch((err: Error) => {
+          res.status(500).json({ message: err.message });
+        });
+    })
+    .catch((err: Error) => {
+      res.status(500).json({ message: err.message });
+    });
+};
 
 //TODO delete profile and all the blogs created from it
 
-export { signup, login, updateProfile, searchUserByName, getUserDetailsById};
+export { signup, login, updateProfile, searchUserByName, getUserDetailsById };

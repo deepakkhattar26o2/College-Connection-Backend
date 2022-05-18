@@ -9,9 +9,7 @@ const userSchema = new mongoose.Schema({
     temp:{type: String, default: 'baka'},
     class: {type: Number, require: true},
     major: {type: String, require: true},
-    bio: {type: String, default: 'I Love College Connection!'},
-    followers: {type: Number, default: 0},
-    following: {type: Number, default: 0}
+    bio: {type: String, default: 'I Love College Connection!'}
 })
 
 export default mongoose.model("User", userSchema);
