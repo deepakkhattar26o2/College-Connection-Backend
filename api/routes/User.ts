@@ -18,7 +18,7 @@ router.get('/u/:username', searchUserByName)//search for a user by name
 
 router.get('/d/:id', getUserDetailsById)//get a single user's details by id
 
-router.patch('/update', updateProfile)//profile update route
+router.patch('/update/:id', updateProfile)//profile update route
 
 router.post('/follow', followAccount)
 

@@ -123,7 +123,7 @@ const updateBlog = (req : Request, res : Response)=>{
             if(!doc){
                 return res.status(409).json({message : 'Invalid Request!'})
               }
-            res.status(200).json({message : 'Blog Updated Successfully', baady : doc})
+            res.status(200).json(doc)
         }
     ).catch(
         (err : Error)=>{

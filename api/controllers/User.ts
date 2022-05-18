@@ -122,12 +122,12 @@ const updateProfile = (req : Request, res: Response)=>{
         return res.status(409).json({message: "Password Cannot be Changed"})
     }
     body.userName = body.first_name +" "+body.last_name
-    User.findOneAndUpdate({_id: body._id}, {$set: body }).exec().then(
+    User.findByIdAndUpdate(req.params.id, {$set: body }).exec().then(
       (conc : any)=>{
         if(!conc){
           return res.status(409).json({message : 'Invalid Request!'})
         }
-        res.status(200).json({message : "update Successful", baady: conc})
+        res.status(200).json(conc)
       }
     ).catch(
       (err: Error)=>{
