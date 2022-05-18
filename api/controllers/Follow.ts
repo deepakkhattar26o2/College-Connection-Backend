@@ -39,4 +39,28 @@ const unFollowAccount = (req : Request, res : Response)=>{
     )
 }
 
-export {followAccount, unFollowAccount}
+const getAllFollowers = (req : Request, res : Response) =>{
+    Follow.find({user_id : req.params.id}).exec().then(
+        (docs : any)=>{
+            res.status(200).json(docs)
+        }
+    ).catch(
+        (err : Error)=>{
+            res.status(500).json({message : err.message})
+        }
+    )
+}
+
+const getAllFollowing = (req : Request, res : Response) =>{
+    Follow.find({follower_id : req.params.id}).exec().then(
+        (docs : any) =>{
+            res.status(200).json(docs)
+        }
+    ).catch(
+        (err : Error) =>{
+            res.status(500).json({message : err.message})
+        }
+    )
+}
+
+export {followAccount, unFollowAccount, getAllFollowers, getAllFollowing}

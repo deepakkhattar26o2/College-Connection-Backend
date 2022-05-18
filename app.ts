@@ -9,16 +9,28 @@ const port: number = 5000;
 const app: Application = express();
 app.use(cors());
 import upload from "./upload";
-const socketio = require("socket.io");
+import {Server} from 'socket.io'
 const server = http.createServer(app);
-const io = socketio(server);
 
 app.use(express.json());
 connect();
 
+const io :any= new Server(server, 
+  {
+  cors : {
+    origin : "http://localhost:3000",
+    methods : "*"
+  }
+}
+)
 
 io.on("connection", (socket: any) => {
-  console.log("New WS Connnection!");
+  console.log(socket.id);
+
+
+  socket.on('disconnect', ()=>{
+    console.log("USER DISCONNECTED", socket.id)
+  })
 });
 
 app.use("/api", apiRouter);
