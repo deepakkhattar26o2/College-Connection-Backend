@@ -153,6 +153,7 @@ const searchUserByName = (req: Request, res: Response) => {
 };
 
 const getUserDetailsById = (req: Request, res: Response) => {
+  console.log("CURRENT UID", req.params.id)
   User.findById(req.params.id)
     .select('_id userName first_name last_name bio class major email followers following')
     .exec()

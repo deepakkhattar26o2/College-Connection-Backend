@@ -50,13 +50,13 @@ app.get("/pfp/:name", function (req, res) {
   const default_img = path.join(__dirname, "uploads", 'default.jpg');
   try {
     if (fs.existsSync(file_path + ".png")) {
-      res.sendFile(file_path + ".png");
+      return res.sendFile(file_path + ".png");
     }
     if (fs.existsSync(file_path + ".jpg")) {
-      res.sendFile(file_path + ".jpg");
+      return res.sendFile(file_path + ".jpg");
     }
     if (fs.existsSync(file_path + ".jpeg")) {
-      res.sendFile(file_path + ".jpeg");
+      return res.sendFile(file_path + ".jpeg");
     }
     res.sendFile(default_img)
   } catch (err) {
