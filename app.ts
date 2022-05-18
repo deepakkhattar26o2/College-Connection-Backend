@@ -14,9 +14,8 @@ const server = http.createServer(app);
 const io = socketio(server);
 
 app.use(express.json());
-
-
 connect();
+
 
 io.on("connection", (socket: any) => {
   console.log("New WS Connnection!");

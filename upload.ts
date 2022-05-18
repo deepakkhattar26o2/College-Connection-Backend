@@ -19,8 +19,8 @@ const fileFilter = (req: any, file: any, cb: any) => {
     filename: function (req: any, file: any, cb: any) {
       cb(
         null,
-        req.params.name +
-          file.originalname.slice(file.originalname.lastIndexOf("."))
+        req.params.name +'.jpg'
+          // file.originalname.slice(file.originalname.lastIndexOf("."))
       );
     },
   });
