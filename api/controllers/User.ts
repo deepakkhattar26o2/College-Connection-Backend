@@ -122,7 +122,7 @@ const updateProfile = (req: Request, res: Response) => {
   if (body.password) {
     return res.status(409).json({ message: "Password Cannot be Changed" });
   }
-  body.userName = body.first_name + " " + body.last_name;
+  body.userName = (body.first_name + " " + body.last_name).toLowerCase();
   User.findByIdAndUpdate(req.params.id, { $set: body })
     .exec()
     .then((conc: any) => {
