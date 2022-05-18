@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import Follow from "../models/Follow";
-import User from "../models/User";
 
 interface followAccountBody{
     follower_id : string,
@@ -8,13 +7,24 @@ interface followAccountBody{
 }
 const followAccount = (req : Request, res : Response)=>{
     const body : followAccountBody = req.body;
-    const newFollow = new Follow({
-        follower_id : body.follower_id,
-        user_id : body.user_id
-    })
-    newFollow.save().then(
-        (conc : any)=>{
-            res.status(200).json({message : "follow successful!"})
+    Follow.findOne({follower_id : body.follower_id, user_id : body.user_id}).exec().then(
+        (doc : any)=>{
+            if(doc){
+                return res.status(409).json({message : "You've already followed the user"})
+            }
+            const newFollow = new Follow({
+                follower_id : body.follower_id,
+                user_id : body.user_id
+            })
+            newFollow.save().then(
+                (conc : any)=>{
+                    res.status(200).json({message : "follow successful!"})
+                }
+            ).catch(
+                (err : Error)=>{
+                    res.status(500).json({message : err.message})
+                }
+            )
         }
     ).catch(
         (err : Error)=>{

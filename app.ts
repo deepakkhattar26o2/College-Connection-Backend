@@ -27,6 +27,10 @@ const io :any= new Server(server,
 io.on("connection", (socket: any) => {
   console.log(socket.id);
 
+  socket.on("join_room", (data: any)=>{
+    socket.join(data);
+  })
+
 
   socket.on('disconnect', ()=>{
     console.log("USER DISCONNECTED", socket.id)
